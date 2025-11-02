@@ -1,2 +1,3 @@
-web: gunicorn govindtoys.wsgi
+web: gunicorn govindtoys.wsgi:application
+
 
