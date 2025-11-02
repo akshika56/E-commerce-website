@@ -1,1 +1,2 @@
-web: gunicorn govindtoys.wsgi:application --chdir backend
+web: gunicorn govindtoys.wsgi
+
