@@ -3,23 +3,22 @@ from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
 
-# Define base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Force-load .env file from backend folder (handles spaces in folder name)
-load_dotenv(dotenv_path=os.path.join(BASE_DIR, ".env"))
+# Load .env
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['e-commerce-website-12yo.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    "e-commerce-website-12yo.onrender.com",
+    "localhost",
+    "127.0.0.1"
+]
 
-
-
-# Application definition
+# Installed apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -28,20 +27,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Your app
-    'shop',
-
-    # Third-party
-    'rest_framework',
+    'shop',             # Your app
+    'rest_framework',   # Third-party
     'corsheaders',
 ]
 
+# Middleware
 MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+
+    # Whitenoise for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -68,14 +68,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'govindtoys.wsgi.application'
 
-# Database: PostgreSQL
+# Database
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
+        default=os.getenv("DATABASE_URL"),
         conn_max_age=600,
         ssl_require=True
     )
 }
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -84,17 +85,23 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Static & media files
+# STATIC FILES (Render + Whitenoise)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# MEDIA FILES (Images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -106,8 +113,4 @@ REST_FRAMEWORK = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    # Add your frontend deployed URL here
-]
-
+CORS_ALLOW_ALL_ORIGINS = True
